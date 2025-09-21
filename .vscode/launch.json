@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Chrome against localhost",
+      "type": "chrome", // Sử dụng debugger cho Chrome
+      "request": "launch",
+      "url": "http://localhost:3000", // URL của ứng dụng React
+      "webRoot": "${workspaceFolder}/src", // Chỉ định thư mục chứa source code
+      "sourceMaps": true, // Rất quan trọng, giúp map code đã build về code gốc
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/*"
+      }
+    },
+    {
+      "name": "Launch Edge against localhost",
+      "type": "msedge", // Sử dụng debugger cho Edge
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/src"
+    }
+  ]
+}
