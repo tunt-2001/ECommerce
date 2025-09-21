@@ -7,6 +7,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AuthContext } from '../../contexts/AuthContext';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 const drawerWidth = 240;
 
@@ -19,20 +20,21 @@ const AdminLayout = () => {
         navigate('/login');
     };
 
+    // --- SỬA LẠI CÁC ĐƯỜNG DẪN Ở ĐÂY ---
     const menuItems = [
-        { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+        { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin/dashboard' },
         { text: 'Categories', icon: <CategoryIcon />, path: '/admin/categories' },
-        { text: 'Products', icon: <ShoppingCartIcon />, path: '/admin/products' }, // Sẽ tạo sau
-        { text: 'Users', icon: <PeopleIcon />, path: '/admin/users' }, // Sẽ tạo sau
+        { text: 'Products', icon: <ShoppingCartIcon />, path: '/admin/products' },
+        { text: 'Users', icon: <PeopleIcon />, path: '/admin/users' },
+        { text: 'Orders', icon: <AssignmentIcon />, path: '/admin/orders' },
     ];
 
     return (
         <Box sx={{ display: 'flex' }}>
-            {/* THANH APPBAR Ở TRÊN */}
             <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
                     <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-                        ADMIN ECOMMERCE
+                        Admin Panel
                     </Typography>
                     <IconButton color="inherit" onClick={handleLogout} title="Logout">
                         <LogoutIcon />
@@ -40,7 +42,6 @@ const AdminLayout = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* THANH SIDEBAR BÊN CẠNH */}
             <Drawer
                 variant="permanent"
                 sx={{
@@ -65,11 +66,9 @@ const AdminLayout = () => {
                     </List>
                 </Box>
             </Drawer>
-
-            {/* PHẦN NỘI DUNG CHÍNH CỦA TRANG */}
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <Toolbar />
-                <Outlet /> {/* Đây là nơi nội dung của các trang con (Dashboard, Category...) sẽ được render */}
+                <Outlet />
             </Box>
         </Box>
     );

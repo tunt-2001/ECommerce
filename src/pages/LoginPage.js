@@ -7,7 +7,7 @@ import { Button, TextField, Container, Typography, Box, Alert } from '@mui/mater
 const ROLE_CLAIM_TYPE = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
 
 const LoginPage = () => {
-    const [username, setUsername] = useState('admin'); // State đổi thành username
+    const [username, setUsername] = useState('admin');
     const [password, setPassword] = useState('Admin@123');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -21,14 +21,16 @@ const LoginPage = () => {
         setLoading(true);
 
         try {
-            const token = await login(username, password); // Gọi hàm login với username
-
+            const token = await login(username, password);
             const decodedToken = jwtDecode(token);
             const role = decodedToken[ROLE_CLAIM_TYPE];
 
+            // --- SỬA LOGIC ĐIỀU HƯỚNG TẠI ĐÂY ---
             if (role === 'Admin') {
+                // Nếu là Admin, chuyển hướng đến trang Dashboard của khu vực quản trị.
                 navigate('/admin/dashboard', { replace: true });
             } else {
+                // Nếu là User hoặc bất kỳ role nào khác, chuyển hướng về trang chủ mua sắm.
                 navigate('/', { replace: true });
             }
             
@@ -51,7 +53,7 @@ const LoginPage = () => {
                         required
                         fullWidth
                         id="username"
-                        label="Username" // Label đổi thành Username
+                        label="Username"
                         name="username"
                         autoComplete="username"
                         autoFocus
