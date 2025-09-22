@@ -16,16 +16,12 @@ const LandingPage = () => {
     }
 
     if (user) {
-        // --- SỬA LOGIC ĐIỀU HƯỚNG TẠI ĐÂY ---
         if (user.role === 'Admin') {
-            // Nếu là Admin, chuyển hướng đến trang dashboard của admin
             return <Navigate to="/admin/dashboard" replace />;
         }
-        // Nếu là User, hiển thị trang chủ
         return <HomePage />;
     }
     
-    // Nếu chưa đăng nhập, hiển thị trang chủ
     return <HomePage />;
 };
 

@@ -23,8 +23,6 @@ const MainLayout = () => {
                         E-Commerce Store
                     </Typography>
                     
-                    {/* === THÊM ĐIỀU KIỆN Ở ĐÂY === */}
-                    {/* Chỉ hiển thị Icon Giỏ hàng và Nút My Orders/Logout nếu người dùng đã đăng nhập */}
                     {user ? (
                         <>
                             <IconButton component={RouterLink} to="/cart" size="large" aria-label="show cart items" color="inherit">
@@ -32,6 +30,7 @@ const MainLayout = () => {
                                     <ShoppingCartIcon />
                                 </Badge>
                             </IconButton>
+                            <Button color="inherit" component={RouterLink} to="/profile">My Profile</Button>
                             <Button color="inherit" component={RouterLink} to="/my-orders">My Orders</Button>
                             <Button color="inherit" onClick={handleLogout}>Logout</Button>
                         </>

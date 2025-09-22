@@ -25,12 +25,9 @@ const LoginPage = () => {
             const decodedToken = jwtDecode(token);
             const role = decodedToken[ROLE_CLAIM_TYPE];
 
-            // --- SỬA LOGIC ĐIỀU HƯỚNG TẠI ĐÂY ---
             if (role === 'Admin') {
-                // Nếu là Admin, chuyển hướng đến trang Dashboard của khu vực quản trị.
                 navigate('/admin/dashboard', { replace: true });
             } else {
-                // Nếu là User hoặc bất kỳ role nào khác, chuyển hướng về trang chủ mua sắm.
                 navigate('/', { replace: true });
             }
             

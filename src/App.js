@@ -21,11 +21,12 @@ import MainLayout from './components/layout/MainLayout';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ProductDetailPage from './pages/ProductDetailPage';
-import CartPage from './pages/CartPage'; // 1. Import CartPage
+import CartPage from './pages/CartPage'; 
 import MyOrdersPage from './pages/MyOrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
-import CheckoutPage from './pages/CheckoutPage'; // Import trang mới
+import CheckoutPage from './pages/CheckoutPage'; 
 import AdminOrderListPage from './pages/admin/order/AdminOrderListPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
     return (
@@ -74,6 +75,7 @@ function App() {
                         <Route path="/my-orders" element={<PrivateRoute><MyOrdersPage /></PrivateRoute>} />
                         <Route path="/orders/:id" element={<PrivateRoute><OrderDetailPage /></PrivateRoute>} />
                         <Route path="/checkout" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
+                        <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
                     </Route>
 
                 </Routes>

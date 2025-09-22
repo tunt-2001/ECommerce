@@ -20,7 +20,6 @@ const AdminLayout = () => {
         navigate('/login');
     };
 
-    // --- SỬA LẠI CÁC ĐƯỜNG DẪN Ở ĐÂY ---
     const menuItems = [
         { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin/dashboard' },
         { text: 'Categories', icon: <CategoryIcon />, path: '/admin/categories' },

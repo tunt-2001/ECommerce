@@ -1,108 +1,178 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../../api/axiosConfig';
-import { Container, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Box } from '@mui/material';
+
+// Material-UI Components
+import {
+    Container,
+    Typography,
+    Button,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    IconButton,
+    Box,
+    CircularProgress
+} from '@mui/material';
+
+// Toast Notifications
 import { toast } from 'react-toastify';
+
+// Icons
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+
+// Custom Components
 import ProductFormDialog from '../../../components/admin/product/ProductFormDialog';
+import ConfirmDialog from '../../../components/common/ConfirmDialog';
 
 const ProductListPage = () => {
+    // State quản lý dữ liệu và UI
     const [products, setProducts] = useState([]);
-    const [openDialog, setOpenDialog] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [isProductFormOpen, setIsProductFormOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
 
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    const fetchProducts = async () => {
+    // Hàm lấy danh sách sản phẩm từ API
+    const fetchProducts = useCallback(async () => {
+        setLoading(true);
         try {
-            const response = await api.get('/admin/products');
-            setProducts(response.data);
+            // Trang admin sẽ lấy tất cả sản phẩm, có thể đặt pageSize rất lớn
+            const response = await api.get('/admin/products', { params: { pageSize: 1000 } });
+            
+            // XỬ LÝ AN TOÀN: Đảm bảo dữ liệu trả về là một mảng
+            if (response.data && Array.isArray(response.data.items)) {
+                setProducts(response.data.items);
+            } else {
+                setProducts([]);
+                toast.error("Invalid data format received from the server.");
+            }
         } catch (error) {
             toast.error("Failed to fetch products.");
+            setProducts([]); // Đặt thành mảng rỗng nếu có lỗi
+        } finally {
+            setLoading(false);
         }
-    };
-    
-    const handleOpenDialog = (product = null) => {
+    }, []);
+
+    // Chạy hàm fetchProducts khi component được mount
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
+
+    // --- Handlers cho Dialog Thêm/Sửa Sản phẩm ---
+    const handleOpenProductForm = (product = null) => {
         setSelectedProduct(product);
-        setOpenDialog(true);
+        setIsProductFormOpen(true);
     };
 
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
+    const handleCloseProductForm = () => {
+        setIsProductFormOpen(false);
         setSelectedProduct(null);
     };
 
-    const handleSave = async (productData) => {
+    const handleSaveProduct = async (productData) => {
         try {
-            if (productData.id) {
+            if (productData.id) { // Chế độ Sửa
                 await api.put(`/admin/products/${productData.id}`, productData);
                 toast.success('Product updated successfully!');
-            } else {
+            } else { // Chế độ Thêm mới
                 await api.post('/admin/products', productData);
                 toast.success('Product added successfully!');
             }
-            fetchProducts();
+            fetchProducts(); // Tải lại danh sách
         } catch (error) {
-            toast.error("Failed to save product.");
+            toast.error(error.response?.data?.message || "Failed to save product.");
         } finally {
-            handleCloseDialog();
+            handleCloseProductForm();
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this product?')) {
-            try {
-                await api.delete(`/admin/products/${id}`);
-                toast.success('Product deleted successfully!');
-                fetchProducts();
-            } catch (error) {
-                toast.error("Failed to delete product.");
-            }
+    // --- Handlers cho Dialog Xác nhận Xóa ---
+    const handleOpenConfirm = (product) => {
+        setProductToDelete(product);
+        setIsConfirmOpen(true);
+    };
+
+    const handleCloseConfirm = () => {
+        setProductToDelete(null);
+        setIsConfirmOpen(false);
+    };
+
+    const handleDeleteProduct = async () => {
+        if (!productToDelete) return;
+        try {
+            await api.delete(`/admin/products/${productToDelete.id}`);
+            toast.success('Product deleted successfully!');
+            fetchProducts(); // Tải lại danh sách
+        } catch (error) {
+            toast.error("Failed to delete product.");
+        } finally {
+            handleCloseConfirm();
         }
     };
 
     return (
-        <Container>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, mt: 4 }}>
+        <Container maxWidth="lg">
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', my: 4 }}>
                 <Typography variant="h4" component="h1">Product Management</Typography>
-                <Button variant="contained" color="primary" onClick={() => handleOpenDialog()}>Add New Product</Button>
+                <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => handleOpenProductForm()}>
+                    Add New Product
+                </Button>
             </Box>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Category</TableCell>
-                            <TableCell>Price</TableCell>
-                            <TableCell>Stock</TableCell>
-                            <TableCell align="right">Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {products.map((product) => (
-                            <TableRow key={product.id}>
-                                <TableCell>{product.id}</TableCell>
-                                <TableCell>{product.name}</TableCell>
-                                <TableCell>{product.categoryName}</TableCell>
-                                <TableCell>${product.price.toFixed(2)}</TableCell>
-                                <TableCell>{product.stock}</TableCell>
-                                <TableCell align="right">
-                                    <IconButton color="primary" onClick={() => handleOpenDialog(product)}><EditIcon /></IconButton>
-                                    <IconButton color="error" onClick={() => handleDelete(product.id)}><DeleteIcon /></IconButton>
-                                </TableCell>
+
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
+            ) : (
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Category</TableCell>
+                                <TableCell align="right">Price</TableCell>
+                                <TableCell align="right">Stock</TableCell>
+                                <TableCell align="right">Actions</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {/* SỬ DỤNG OPTIONAL CHAINING ĐỂ AN TOÀN */}
+                            {products?.map((product) => (
+                                <TableRow key={product.id}>
+                                    <TableCell component="th" scope="row">{product.name}</TableCell>
+                                    <TableCell>{product.categoryName}</TableCell>
+                                    <TableCell align="right">${product.price.toFixed(2)}</TableCell>
+                                    <TableCell align="right">{product.stock}</TableCell>
+                                    <TableCell align="right">
+                                        <IconButton color="primary" onClick={() => handleOpenProductForm(product)}><EditIcon /></IconButton>
+                                        <IconButton color="error" onClick={() => handleOpenConfirm(product)}><DeleteIcon /></IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )}
+
             <ProductFormDialog
-                open={openDialog}
-                onClose={handleCloseDialog}
-                onSave={handleSave}
+                open={isProductFormOpen}
+                onClose={handleCloseProductForm}
+                onSave={handleSaveProduct}
                 product={selectedProduct}
+            />
+
+            <ConfirmDialog
+                open={isConfirmOpen}
+                onClose={handleCloseConfirm}
+                onConfirm={handleDeleteProduct}
+                title="Delete Product"
+                message={`Are you sure you want to permanently delete the product "${productToDelete?.name}"?`}
             />
         </Container>
     );
