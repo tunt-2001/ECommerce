@@ -27,7 +27,9 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import CheckoutPage from './pages/CheckoutPage'; 
 import AdminOrderListPage from './pages/admin/order/AdminOrderListPage';
 import ProfilePage from './pages/ProfilePage';
-
+import MarketingPageLayout from './pages/admin/marketing/MarketingPageLayout';
+import NewsletterComposePage from './pages/admin/marketing/NewsletterComposePage';
+import NewsletterHistoryPage from './pages/admin/marketing/NewsletterHistoryPage';
 function App() {
     return (
         <>
@@ -54,6 +56,12 @@ function App() {
                         <Route path="products" element={<ProductListPage />} />
                         <Route path="users" element={<UserListPage />} />
                         <Route path="orders" element={<AdminOrderListPage />} /> 
+                        <Route path="marketing" element={<MarketingPageLayout />}>
+                            {/* Mặc định của /admin/marketing sẽ là trang compose */}
+                            <Route index element={<NewsletterComposePage />} /> 
+                            <Route path="compose" element={<NewsletterComposePage />} />
+                            <Route path="history" element={<NewsletterHistoryPage />} />
+                        </Route>
                     </Route>
 
                     {/* ========================================================== */}
