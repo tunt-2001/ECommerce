@@ -1,108 +1,92 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-
-// Pages - Public & User
-import LoginPage from './pages/LoginPage';
-import LandingPage from './pages/LandingPage';
-import UnauthorizedPage from './pages/UnauthorizedPage';
-
-// Pages - Admin
-import DashboardPage from './pages/admin/dashboard/DashboardPage';
-import CategoryListPage from './pages/admin/category/CategoryListPage';
-import ProductListPage from './pages/admin/product/ProductListPage';
-import UserListPage from './pages/admin/user/UserListPage';
-
-// Layouts & Route Protection
+import { ThemeProvider } from '@mui/material/styles';
+import { CssBaseline, StyledEngineProvider } from '@mui/material';
+import themes from './themes'; // Import hàm tạo theme
+import config from './config'; 
 import PrivateRoute from './routes/PrivateRoute';
 import AdminLayout from './components/layout/AdminLayout';
 import MainLayout from './components/layout/MainLayout';
-
-// Toast Notifications
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import LoginPage from './pages/LoginPage';
+import LandingPage from './pages/LandingPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
 import ProductDetailPage from './pages/ProductDetailPage';
-import CartPage from './pages/CartPage'; 
+import CartPage from './pages/CartPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
-import CheckoutPage from './pages/CheckoutPage'; 
-import AdminOrderListPage from './pages/admin/order/AdminOrderListPage';
+import CheckoutPage from './pages/CheckoutPage';
 import ProfilePage from './pages/ProfilePage';
+import Dashboard from './pages/admin/dashboard/index';
+import CategoryListPage from './pages/admin/category/CategoryListPage';
+import ProductListPage from './pages/admin/product/ProductListPage';
+import UserListPage from './pages/admin/user/UserListPage';
+import AdminOrderListPage from './pages/admin/order/AdminOrderListPage';
 import MarketingPageLayout from './pages/admin/marketing/MarketingPageLayout';
 import NewsletterComposePage from './pages/admin/marketing/NewsletterComposePage';
 import NewsletterHistoryPage from './pages/admin/marketing/NewsletterHistoryPage';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
+    const customization = config;
+
     return (
-        <>
-            <Router>
-                <Routes>
-                    {/* ========================================================== */}
-                    {/* LUỒNG ADMIN - Được bảo vệ và có layout riêng             */}
-                    {/* Tất cả các URL bắt đầu bằng /admin sẽ đi vào đây          */}
-                    {/* ========================================================== */}
-                    <Route
-                        path="/admin"
-                        element={
-                            <PrivateRoute roles={['Admin']}>
-                                <AdminLayout />
-                            </PrivateRoute>
-                        }
-                    >
-                        {/* Khi vào /admin, tự động chuyển đến dashboard */}
-                        <Route index element={<Navigate to="/admin/dashboard" replace />} /> 
-                        
-                        {/* Các trang con của Admin */}
-                        <Route path="dashboard" element={<DashboardPage />} />
-                        <Route path="categories" element={<CategoryListPage />} />
-                        <Route path="products" element={<ProductListPage />} />
-                        <Route path="users" element={<UserListPage />} />
-                        <Route path="orders" element={<AdminOrderListPage />} /> 
-                        <Route path="marketing" element={<MarketingPageLayout />}>
-                            {/* Mặc định của /admin/marketing sẽ là trang compose */}
-                            <Route index element={<NewsletterComposePage />} /> 
-                            <Route path="compose" element={<NewsletterComposePage />} />
-                            <Route path="history" element={<NewsletterHistoryPage />} />
+        <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={themes(customization)}>
+                <CssBaseline />
+                
+                <Router>
+                    <Routes>
+                        <Route
+                            path="/admin"
+                            element={
+                                <PrivateRoute roles={['Admin']}>
+                                    <AdminLayout />
+                                </PrivateRoute>
+                            }
+                        >
+                            <Route index element={<Navigate to="/admin/dashboard" replace />} /> 
+                            <Route path="dashboard" element={<Dashboard />} />
+                            <Route path="categories" element={<CategoryListPage />} />
+                            <Route path="products" element={<ProductListPage />} />
+                            <Route path="users" element={<UserListPage />} />
+                            <Route path="orders" element={<AdminOrderListPage />} /> 
+                            <Route path="marketing" element={<MarketingPageLayout />}>
+                                <Route index element={<Navigate to="/admin/marketing/compose" replace />} /> 
+                                <Route path="compose" element={<NewsletterComposePage />} />
+                                <Route path="history" element={<NewsletterHistoryPage />} />
+                            </Route>
                         </Route>
-                    </Route>
 
-                    {/* ========================================================== */}
-                    {/* LUỒNG PUBLIC & USER - Sử dụng layout chính                */}
-                    {/* Tất cả các URL không khớp với /admin sẽ đi vào đây       */}
-                    {/* ========================================================== */}
-                    <Route element={<MainLayout />}>
-                        {/* Trang gốc "/", sử dụng LandingPage để phân luồng */}
-                        <Route path="/" element={<LandingPage />} />
-                        
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                        <Route element={<MainLayout />}>
+                            <Route path="/" element={<LandingPage />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                            <Route path="/products/:id" element={<ProductDetailPage />} />
+                            <Route path="/cart" element={<CartPage />} />
+                            <Route path="/my-orders" element={<PrivateRoute><MyOrdersPage /></PrivateRoute>} />
+                            <Route path="/orders/:id" element={<PrivateRoute><OrderDetailPage /></PrivateRoute>} />
+                            <Route path="/checkout" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
+                            <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+                        </Route>
 
-                        {/* Thêm các trang khác cho người dùng ở đây */}
-                        {/* Ví dụ: <Route path="/products/:id" element={<ProductDetailPage />} /> */}
-                        {/* Ví dụ: <Route path="/cart" element={<CartPage />} /> */}
-                        <Route path="/products/:id" element={<ProductDetailPage />} />
-                        <Route path="/cart" element={<CartPage />} />
-                        <Route path="/my-orders" element={<PrivateRoute><MyOrdersPage /></PrivateRoute>} />
-                        <Route path="/orders/:id" element={<PrivateRoute><OrderDetailPage /></PrivateRoute>} />
-                        <Route path="/checkout" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
-                        <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-                    </Route>
+                    </Routes>
+                </Router>
 
-                </Routes>
-            </Router>
-
-            {/* Component để hiển thị thông báo pop-up */}
-            <ToastContainer
-                position="bottom-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-            />
-        </>
+                <ToastContainer
+                    position="bottom-right"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="colored"
+                />
+            </ThemeProvider>
+        </StyledEngineProvider>
     );
 }
 
