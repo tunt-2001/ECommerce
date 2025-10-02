@@ -26,19 +26,19 @@ export const CartProvider = ({ children }) => {
      * Thêm một sản phẩm vào giỏ hàng.
      * @param {object} product - Đối tượng sản phẩm đầy đủ thông tin (id, name, price...).
      */
-    const addToCart = (product) => {
-        setCartItems(prevItems => {
-            const existingItem = prevItems.find(item => item.id === product.id);
-            if (existingItem) {
-                // Nếu sản phẩm đã tồn tại, chỉ cần tăng số lượng (quantity) lên 1.
-                return prevItems.map(item =>
-                    item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-                );
-            }
-            // Nếu sản phẩm chưa có trong giỏ, thêm nó vào danh sách với số lượng là 1.
-            return [...prevItems, { ...product, quantity: 1 }];
-        });
-        toast.success(`"${product.name}" added to cart!`);
+    const addToCart = (product, quantityToAdd = 1) => { // Thêm tham số quantityToAdd
+    setCartItems(prevItems => {
+        const existingItem = prevItems.find(item => item.id === product.id);
+        if (existingItem) {
+            // Nếu sản phẩm đã có, cộng thêm số lượng mới
+            return prevItems.map(item =>
+                item.id === product.id ? { ...item, quantity: item.quantity + quantityToAdd } : item
+            );
+        }
+        // Nếu chưa có, thêm mới với số lượng được cung cấp
+        return [...prevItems, { ...product, quantity: quantityToAdd }];
+    });
+    toast.success(`Added ${quantityToAdd} of "${product.name}" to cart!`);
     };
 
     /**

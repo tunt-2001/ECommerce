@@ -9,7 +9,7 @@ import {
 
 const adminMenu = {
   id: 'group-admin-management',
-  title: 'ECommerce', // Tiêu đề này sẽ hiện ra trên sidebar
+  title: '', // Tiêu đề này sẽ hiện ra trên sidebar
   type: 'group',
   
   children: [
